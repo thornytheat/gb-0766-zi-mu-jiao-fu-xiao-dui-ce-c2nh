@@ -2,6 +2,7 @@ from .modules.source.service import receive
 from .modules.clock.service import validate
 from .modules.edits.contract import timeline
 from .modules.edits.mapping import map_cues
+from .modules.compose.service import compose
 from .modules.overlaps.service import locate
 from .modules.balance.service import balance
 
@@ -16,6 +17,9 @@ def inspect(material, until=None):
     cuts = map_cues(timing['rows'], timeline(material['cuts']))
     if until == 'edits':
         return cuts
+    projection = compose(cuts['rows'])
+    if until == 'compose':
+        return projection
     clashes = locate(cuts['rows'])
     if until == 'overlaps':
         return clashes
@@ -23,4 +27,4 @@ def inspect(material, until=None):
                     len(source['isolated']) + len(timing['isolated']))
     if until == 'balance':
         return check
-    return dict(source=source, clock=timing, edits=cuts, overlaps=clashes, balance=check)
+    return dict(source=source, clock=timing, edits=cuts, compose=projection, overlaps=clashes, balance=check)
